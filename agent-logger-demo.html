@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Logger Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .log-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        
+        .log-category {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        /* Log category colors */
+        .active-agent { color: #00d4ff; }
+        .agent-input { color: #00ff00; }
+        .agent-output { color: #ffff00; }
+        .decision { color: #ff00ff; }
+        .tool-used { color: #00a2ff; }
+        .model-used { color: #ff6b6b; }
+        .prompt-used { color: #ffffff; }
+        
+        .clear-btn {
+            background: #dc3545;
+        }
+        
+        .clear-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agent Logger Demo</h1>
+        <p class="description">This demo shows the agent logging system that captures only the specified information: Active Agent, Agent I/O, Decisions, Tools, Models, and Prompts.</p>
+        
+        <h3>Log Categories</h3>
+        <div class="controls">
+            <div class="control-group">
+                <input type="checkbox" id="activeAgent" checked>
+                <label for="activeAgent">Active Agent</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="agentIO" checked>
+                <label for="agentIO">Agent Input/Output</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="decisions" checked>
+                <label for="decisions">Decisions</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="tools" checked>
+                <label for="tools">Tools Used</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="models" checked>
+                <label for="models">Models Used</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="prompts" checked>
+                <label for="prompts">Prompts Used</label>
+            </div>
+        </div>
+        
+        <h3>Actions</h3>
+        <div class="actions">
+            <button onclick="activateAgent()">Activate Agent</button>
+            <button onclick="sendInput()">Send Input to Agent</button>
+            <button onclick="makeDecision()">Make Decision</button>
+            <button onclick="useTool()">Use Tool</button>
+            <button onclick="useModel()">Use Model</button>
+            <button onclick="runFullFlow()">Run Full Agent Flow</button>
+            <button class="clear-btn" onclick="clearLogs()">Clear Logs</button>
+        </div>
+        
+        <h3>Log Output</h3>
+        <div id="logOutput" class="log-output"></div>
+    </div>
+
+    <script src="agentLogger.js"></script>
+    <script>
+        // Initialize logger
+        const logger = new AgentLogger({
+            outputFormat: 'custom',
+            customHandler: (category, data) => {
+                const logDiv = document.getElementById('logOutput');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                
+                const categorySpan = document.createElement('span');
+                categorySpan.className = `log-category ${category.toLowerCase().replace('_', '-')}`;
+                categorySpan.textContent = `[${category}]`;
+                
+                const dataText = JSON.stringify(data, null, 2);
+                entry.appendChild(categorySpan);
+                entry.appendChild(document.createTextNode(' ' + dataText));
+                
+                logDiv.appendChild(entry);
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }
+        });
+        
+        // Agent simulation
+        const mockAgent = {
+            name: 'DemoAgent',
+            id: 'agent-demo-001'
+        };
+        
+        // Control handlers
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                logger.setLogCategory(e.target.id, e.target.checked);
+            });
+        });
+        
+        // Action handlers
+        function activateAgent() {
+            logger.logActiveAgent(mockAgent.name, mockAgent.id, {
+                status: 'activated',
+                capabilities: ['text-generation', 'web-search', 'calculation']
+            });
+        }
+        
+        function sendInput() {
+            const userInput = 'Can you help me find information about machine learning?';
+            logger.logAgentInput(mockAgent.name, userInput, {
+                inputType: 'user_query',
+                language: 'en',
+                length: userInput.length
+            });
+            
+            setTimeout(() => {
+                const output = 'I can help you find information about machine learning. Let me search for relevant resources.';
+                logger.logAgentOutput(mockAgent.name, output, {
+                    outputType: 'response',
+                    processingTime: '230ms',
+                    confidence: 0.92
+                });
+            }, 500);
+        }
+        
+        function makeDecision() {
+            logger.logDecision(
+                mockAgent.name,
+                'use_web_search',
+                'User query requires current information, deciding to use web search tool',
+                {
+                    confidence: 0.88,
+                    alternatives: ['generate_from_knowledge', 'ask_clarification']
+                }
+            );
+        }
+        
+        function useTool() {
+            logger.logToolUsage(
+                mockAgent.name,
+                'web_search',
+                {
+                    query: 'machine learning basics 2024',
+                    maxResults: 5
+                },
+                {
+                    success: true,
+                    resultsCount: 5,
+                    relevanceScore: 0.89
+                },
+                {
+                    duration: '1.2s',
+                    apiCalls: 1
+                }
+            );
+        }
+        
+        function useModel() {
+            logger.logModelUsage(
+                mockAgent.name,
+                'gpt-4-turbo',
+                'language_model',
+                {
+                    inputTokens: 245,
+                    outputTokens: 187,
+                    totalTokens: 432,
+                    cost: 0.00432
+                },
+                {
+                    provider: 'OpenAI',
+                    temperature: 0.7
+                }
+            );
+            
+            logger.logPrompt(
+                mockAgent.name,
+                'search_synthesis',
+                'Given the following search results about machine learning, provide a comprehensive summary...',
+                {
+                    temperature: 0.7,
+                    maxTokens: 500,
+                    topP: 0.9
+                },
+                {
+                    templateVersion: 'v2.3',
+                    promptLength: 1250
+                }
+            );
+        }
+        
+        function runFullFlow() {
+            activateAgent();
+            setTimeout(() => sendInput(), 500);
+            setTimeout(() => makeDecision(), 1500);
+            setTimeout(() => useTool(), 2000);
+            setTimeout(() => useModel(), 2500);
+        }
+        
+        function clearLogs() {
+            document.getElementById('logOutput').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
