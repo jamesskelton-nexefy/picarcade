@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicArcade - Image Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PicArcade</h1>
+            <p class="subtitle">Generate amazing images with AI</p>
+        </header>
+        
+        <main>
+            <div class="control-panel">
+                <textarea 
+                    id="prompt" 
+                    class="prompt-input" 
+                    placeholder="Describe the image you want to generate..."
+                    rows="3"
+                ></textarea>
+                <button id="generateBtn" class="generate-btn">
+                    <span class="btn-text">Generate Image</span>
+                    <span class="spinner" style="display: none;">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.415" stroke-dashoffset="31.415">
+                                <animate attributeName="stroke-dashoffset" dur="1.5s" repeatCount="indefinite" from="31.415" to="0"/>
+                            </circle>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+            
+            <div class="image-display">
+                <div id="imageContainer" class="image-container">
+                    <div id="placeholder" class="placeholder">
+                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p>Your generated image will appear here</p>
+                    </div>
+                    <img id="displayImage" class="display-image" style="display: none;" alt="Generated image">
+                    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                        <div class="loading-spinner">
+                            <div class="spinner-ring"></div>
+                            <p>Generating your image...</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
