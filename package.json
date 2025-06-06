@@ -1,0 +1,56 @@
+{
+  "name": "pic-arcade",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PicArcade - Advanced Picture and Video Editor with AI/ML capabilities",
+  "workspaces": [
+    "apps/*",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:mobile": "npm run dev --workspace=apps/mobile",
+    "build": "npm run build --workspaces",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:mobile": "npm run build --workspace=apps/mobile",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "type-check": "npm run type-check --workspaces",
+    "install:all": "npm install --workspaces && npm run install:python",
+    "install:python": "npm run install:api && npm run install:agentic",
+    "install:api": "cd packages/api && pip install -r requirements.txt",
+    "install:agentic": "cd packages/agentic && pip install -e .",
+    "dev:api": "cd packages/api && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "api:test": "cd packages/api && python -m pytest tests/ -v",
+    "agentic:test": "cd packages/agentic && python -m pytest tests/ -v",
+    "agentic:test:quick": "cd packages/agentic && python -m pytest tests/test_flux_tools.py::TestFluxTools::test_flux_kontext_max_generation tests/test_tool_first_integration.py::TestToolFirstIntegration::test_style_transfer_real_image -v",
+    "agentic:test:performance": "cd packages/agentic && python -m pytest tests/test_flux_tools.py::TestFluxTools::test_performance_benchmarks tests/test_tool_first_integration.py::TestToolFirstIntegration::test_performance_benchmarks -v",
+    "agentic:demo:tool-first": "cd packages/agentic && python examples/tool_first_demo.py",
+    "agentic:demo:flux": "cd packages/agentic && python examples/flux_kontext_demo.py",
+    "agentic:demo:video": "cd packages/agentic && python examples/phase5_video_demo.py",
+    "setup:test-env": "cd packages/agentic && python scripts/setup_test_env.py",
+    "validate:test-env": "cd packages/agentic && python scripts/setup_test_env.py --validate"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0",
+    "python": ">=3.11.0"
+  },
+  "architecture": {
+    "frontend": {
+      "web": "Next.js 14 + React 18 + TypeScript + Tailwind CSS",
+      "mobile": "React Native 0.73 + Redux Toolkit + Native Base"
+    },
+    "backend": {
+      "api": "Python FastAPI + SQLAlchemy + PostgreSQL + Redis + Celery",
+      "ai_ml": "Python advanced image/video processing"
+    },
+    "shared": "TypeScript utilities and types"
+  }
+} 

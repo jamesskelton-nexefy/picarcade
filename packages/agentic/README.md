@@ -1,0 +1,395 @@
+# Pic Arcade Agentic Backend
+
+![Pic Arcade](https://img.shields.io/badge/Pic_Arcade-Agentic_AI-blue)
+![Python](https://img.shields.io/badge/Python-3.11+-green)
+![LangGraph](https://img.shields.io/badge/LangGraph-Workflow-orange)
+![Tool-First](https://img.shields.io/badge/Architecture-Tool_First-purple)
+![Flux Kontext Max](https://img.shields.io/badge/Flux-Kontext_Max-red)
+
+**AI-powered image generation platform using tool-first architecture with cutting-edge Flux Kontext Max integration**
+
+## 🚀 Overview
+
+Pic Arcade Agentic Backend implements a **tool-first architecture** where AI agents dynamically select and chain tools based on user requests. This follows the same pattern used by leading AI systems like Claude, Cursor, and Perplexity.
+
+**✨ NEW: Flux Kontext Max Integration** - Professional-grade image editing capabilities including style transfer, object changes, text editing, background swapping, and character consistency.
+
+### **Key Features**
+- 🔄 **Dynamic Tool Selection**: AI agents choose optimal tool sequences
+- 🧩 **Modular Design**: Each API becomes a standardized tool
+- 🔌 **Easy Extensibility**: Drop-in new tools without code changes
+- 🎯 **Intelligent Workflows**: GPT-4o plans multi-step processes
+- ⚡ **High Performance**: Optimized tool execution and caching
+- 🎨 **Professional Editing**: Flux Kontext Max for advanced image manipulation
+
+## 🏗️ Architecture
+
+### **Tool-First Transformation**
+
+**Before (Phase 2):**
+```
+PromptParsingAgent → ReferenceRetrievalAgent → WorkflowOrchestrator
+```
+
+**After (Tool-First):**
+```
+ToolFirstAgent → WorkflowPlanner → ToolSelector → ToolExecutor
+```
+
+### **Available Tools**
+
+| Category | Tool | Provider | Description |
+|----------|------|----------|-------------|
+| **Text Processing** | PromptParsingTool | OpenAI GPT-4o | Parse and analyze user prompts |
+| | PromptOptimizationTool | OpenAI GPT-4o | Optimize prompts for generation |
+| **Search** | PerplexitySearchTool | Perplexity API | Find images and information |
+| | WebSearchTool | Perplexity API | General web search |
+| **Image Generation** | FluxKontextMaxTool | Replicate API | Advanced Flux Kontext Max generation & editing |
+| | FluxImageGenerationTool | Replicate API | High-quality Flux Pro generation (legacy) |
+| | StableDiffusionImageTool | Replicate API | Stable Diffusion XL generation |
+| | DALLEImageGenerationTool | OpenAI API | DALL-E 3 generation |
+| **Professional Editing** | StyleTransferTool | Flux Kontext Max | Convert photos to art styles (watercolor, oil, sketch) |
+| | ObjectChangeTool | Flux Kontext Max | Modify hair, clothing, accessories naturally |
+| | TextEditingTool | Flux Kontext Max | Replace text in signs, posters, labels |
+| | BackgroundSwapTool | Flux Kontext Max | Change environments while preserving subjects |
+| | CharacterConsistencyTool | Flux Kontext Max | Maintain identity across multiple edits |
+| **Workflow** | WorkflowPlanningTool | OpenAI GPT-4o | Plan multi-step workflows |
+| | WorkflowExecutorTool | Internal | Execute tool chains |
+
+## 🔧 Installation & Setup
+
+### **1. Install Dependencies**
+```bash
+cd packages/agentic
+pip install -e .
+```
+
+### **2. Configure API Keys**
+Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+Add your API keys to `.env`:
+```env
+# OpenAI (for GPT-4o and DALL-E)
+OPENAI_API_KEY=your_openai_api_key
+
+# Replicate (for Flux Kontext Max, Flux Pro, and Stable Diffusion)
+REPLICATE_API_TOKEN=your_replicate_token
+
+# Perplexity (for search)
+PERPLEXITY_API_KEY=your_perplexity_key
+```
+
+**Get API Keys:**
+- OpenAI: https://platform.openai.com/api-keys
+- Replicate: https://replicate.com/account/api-tokens
+- Perplexity: https://docs.perplexity.ai/docs/getting-started
+
+### **3. Run Demonstrations**
+
+**Flux Kontext Max Demo:**
+```bash
+python packages/agentic/examples/flux_kontext_demo.py
+```
+
+**Simple Demo (No API keys required):**
+```bash
+npm run demo:tool-first-simple
+```
+
+**Full Demo (Requires API keys):**
+```bash
+npm run demo:tool-first
+```
+
+## 📊 Example Usage
+
+### **Flux Kontext Max Professional Editing**
+
+```python
+from pic_arcade_agentic.tools import StyleTransferTool, ObjectChangeTool, BackgroundSwapTool
+
+# Style Transfer - Convert to watercolor painting
+style_tool = StyleTransferTool()
+result = await style_tool.invoke({
+    "image": "portrait.jpg",
+    "style": "watercolor",
+    "strength": 0.8,
+    "preserve_details": True
+})
+
+# Object Changes - Change hair color naturally
+object_tool = ObjectChangeTool()
+result = await object_tool.invoke({
+    "image": "person.jpg",
+    "target_object": "hair",
+    "modification": "platinum blonde curly hair",
+    "preserve_lighting": True
+})
+
+# Background Swapping - Professional studio backdrop
+bg_tool = BackgroundSwapTool()
+result = await bg_tool.invoke({
+    "image": "portrait.jpg",
+    "new_background": "modern office with city view",
+    "environment_type": "indoor",
+    "lighting_match": True
+})
+```
+
+### **Dynamic Workflow Planning**
+
+```python
+from pic_arcade_agentic.agents.tool_agent import ToolFirstAgent
+
+agent = ToolFirstAgent()
+
+# Complex multi-step editing automatically planned
+result = await agent.process_request(
+    "Transform this portrait to watercolor style, change hair to blonde, and replace background with a beach scene"
+)
+
+# AI automatically plans and executes:
+# 1. StyleTransferTool → watercolor conversion
+# 2. ObjectChangeTool → hair color change  
+# 3. BackgroundSwapTool → beach environment
+```
+
+### **Character Consistency Across Variations**
+
+```python
+from pic_arcade_agentic.tools import CharacterConsistencyTool
+
+character_tool = CharacterConsistencyTool()
+
+# Maintain same character across different poses
+variations = []
+for scenario in ["laughing with arms crossed", "presenting at conference", "working on laptop"]:
+    result = await character_tool.invoke({
+        "reference_image": "character_base.jpg",
+        "character_description": "professional woman with brown hair and blue eyes",
+        "new_scenario": scenario,
+        "maintain_features": ["facial_features", "hair", "body_proportions"]
+    })
+    variations.append(result.data["consistent_image"])
+```
+
+### **Text Replacement in Images**
+
+```python
+from pic_arcade_agentic.tools import TextEditingTool
+
+text_tool = TextEditingTool()
+
+# Replace storefront sign text
+result = await text_tool.invoke({
+    "image": "storefront.jpg",
+    "original_text": "Old Store Name",
+    "new_text": "PIC ARCADE",
+    "text_location": "on the main sign",
+    "maintain_style": True
+})
+```
+
+## 🎯 Real-World Examples
+
+### **Professional Portrait Enhancement**
+```python
+# Multi-step workflow: Style transfer → Object change → Background swap
+# "Convert this headshot to digital art style, change suit to navy blue, modern office background"
+```
+
+### **Brand Marketing Campaigns**
+```python
+# Text replacement + style variations for different markets
+# "Replace logo with our brand, create vintage and modern style versions"
+```
+
+### **Character Design & Gaming**
+```python
+# Consistent character across multiple poses and expressions
+# "Generate this character running, sitting, and standing while maintaining identity"
+```
+
+### **Content Localization**
+```python
+# Text editing for different regions
+# "Replace all English text in this advertisement with Spanish equivalents"
+```
+
+## 🧪 Testing
+
+### **Run All Tests**
+```bash
+npm run test:phase2
+```
+
+### **Specific Test Suites**
+```bash
+npm run test:prompt-parser
+npm run test:reference-retriever
+npm run test:workflow
+```
+
+### **Test Individual Tools**
+```python
+import pytest
+from pic_arcade_agentic.tools.prompt_tools import PromptParsingTool
+
+@pytest.mark.asyncio
+async def test_prompt_parsing():
+    tool = PromptParsingTool()
+    result = await tool.invoke({"prompt": "Portrait of Emma Stone"})
+    assert result.success
+    assert result.data["intent"] == "generate_portrait"
+```
+
+## 🔄 Adding New Tools
+
+The tool-first architecture makes it incredibly easy to add new capabilities:
+
+### **1. Create Tool Class**
+```python
+class MyNewTool(Tool):
+    def __init__(self):
+        super().__init__(
+            name="my_new_tool",
+            description="Does something amazing",
+            category=ToolCategory.IMAGE_EDITING,
+            input_schema={...},
+            output_schema={...}
+        )
+    
+    async def invoke(self, input_data):
+        # Implementation here
+        return ToolResult(success=True, data=result)
+```
+
+### **2. Register Tool**
+```python
+from pic_arcade_agentic.tools.base import tool_registry
+tool_registry.register(MyNewTool())
+```
+
+### **3. Use Automatically**
+The agent will automatically discover and use your tool in workflows!
+
+## 📈 Performance & Scaling
+
+### **Optimization Features**
+- **Tool Caching**: Results cached for repeated operations
+- **Parallel Execution**: Independent tools run concurrently
+- **Smart Routing**: AI selects most efficient tool combinations
+- **Graceful Degradation**: Fallback tools for reliability
+
+### **Monitoring**
+```python
+# Tool execution metrics
+result = await agent.process_request("Generate image")
+print(f"Tools used: {result['metadata']['tools_used']}")
+print(f"Total time: {result['metadata']['total_time']}s")
+print(f"Status: {result['metadata']['execution_status']}")
+```
+
+## 🔗 Integration
+
+### **Web API Integration**
+```python
+from fastapi import FastAPI
+from pic_arcade_agentic.agents.tool_agent import ToolFirstAgent
+
+app = FastAPI()
+agent = ToolFirstAgent()
+
+@app.post("/edit-image")
+async def edit_image(image_url: str, operation: str, parameters: dict):
+    """Professional image editing endpoint."""
+    request = f"{operation} this image: {image_url}"
+    result = await agent.process_request(request, context=parameters)
+    return result
+
+@app.post("/style-transfer")
+async def style_transfer(image_url: str, style: str):
+    """Direct style transfer endpoint."""
+    from pic_arcade_agentic.tools import StyleTransferTool
+    
+    tool = StyleTransferTool()
+    result = await tool.invoke({
+        "image": image_url,
+        "style": style,
+        "strength": 0.8
+    })
+    return result.data
+```
+
+### **Mobile App Integration**
+The tool-first architecture provides consistent APIs that mobile apps can consume directly for professional editing features.
+
+## 📚 Documentation
+
+- [Flux Kontext Max Usage Guide](FLUX_KONTEXT_USAGE.md) - Complete usage examples and best practices
+- [Flux Model Documentation](../docs/flux.md) - Model capabilities and specifications
+- [Tool-First Architecture Guide](TOOL_FIRST_ARCHITECTURE.md) - Complete implementation details
+- [API Reference](docs/api.md) - Tool schemas and endpoints
+- [Migration Guide](docs/migration.md) - Upgrading from Phase 2
+
+## 🤝 Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-tool`
+3. **Add your tool** following the patterns above
+4. **Write tests** for your tool
+5. **Submit a pull request**
+
+### **Development Setup**
+```bash
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run linting
+black src/ tests/
+isort src/ tests/
+flake8 src/ tests/
+
+# Run type checking
+mypy src/
+```
+
+## 🛣️ Roadmap
+
+### **Phase 3: Advanced Generation** ✅ COMPLETED
+- ✅ Flux Kontext Max integration
+- ✅ Style Transfer capabilities
+- ✅ Object/Clothing modification
+- ✅ Text editing in images
+- ✅ Background swapping
+- ✅ Character consistency
+- ✅ Stable Diffusion XL
+- ✅ DALL-E 3 fallback
+
+### **Phase 4: Editing & Manipulation** 🔄 IN PROGRESS
+- ✅ Advanced style transfer (Flux Kontext Max)
+- ✅ Object modification (Flux Kontext Max)
+- ✅ Background replacement (Flux Kontext Max)
+- 🔄 Advanced inpainting
+- 🔄 Face swap tools
+- 🔄 Video generation tools
+- 🔄 3D model generation
+
+### **Phase 5: Quality & Optimization**
+- 🔄 CLIP scoring
+- 🔄 Aesthetic assessment
+- 🔄 Automatic upscaling
+- �� Artifact removal
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+**🎉 Ready to transform Pic Arcade into an intelligent, modular AI platform?**
+
+Start with the simple demo: `npm run demo:tool-first-simple` 
