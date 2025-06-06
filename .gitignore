@@ -40,4 +40,8 @@ next-env.d.ts
 .idea/
 
 # OS
-Thumbs.db 
+Thumbs.db .env
+packages/agentic/.env
+packages/agentic/.env.example
+packages/api/.env
+packages/api/.env.example
